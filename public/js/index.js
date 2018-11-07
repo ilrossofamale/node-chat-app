@@ -3,11 +3,10 @@ var socket = io();								//inizializza la richiesta verso il server, apre e MAN
 socket.on('connect', function() {
 	console.log('Connesso al server');
 
-	socket.emit('createMessage', {				//definizione di un custom event CLIENT->SERVER ('nome evento', 'oggetto con le informazioni inviate')
-		from: 'jhonny@mnemonic.it',
-		text:'Ciao di nuovo',
-		createAt: new Date().toLocaleString()
-	})
+	//socket.emit('createMessage', {				//definizione di un custom event CLIENT->SERVER ('nome evento', 'oggetto con le informazioni inviate')
+	//	from: 'jhonny@mnemonic.it',
+	//	text:'Ciao di nuovo'
+	//})
 
 });
 
@@ -17,5 +16,5 @@ socket.on('disconnect', function() {
 
 
 socket.on('newMessage', function(message) {				//custom SERVER->CLIENT event definito in server.js function('dati inviati dal server')
-	console.log('Nuovo Messaggio', message);
+	console.log('Nuovo Messaggio dal server', message);
 })
