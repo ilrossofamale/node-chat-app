@@ -19,6 +19,17 @@ io.on('connection', (socket) => {							//registro l'evento (connection) e gli p
 	console.log('Nuovo utente collegato');
 
 
+	socket.emit('newMessage', {								//definizione di un custom event SERVER->CLIENT ('nome evento', 'oggetto con le informazioni inviate')
+		from: 'mike@example.com',
+		text: 'Hey, come va?',
+		createAt: new Date().toLocaleString()
+	});
+
+
+	socket.on('createMessage', (message) => {					//custom CLIENT->SERVER event definito in index.js ('dati inviati al server')
+		console.log('Messaggio ricevuto', message);
+	})
+
 	socket.on('disconnect', (soket) => {
 		console.log('Utente scollegato');
 	})

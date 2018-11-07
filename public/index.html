@@ -12,20 +12,6 @@
 		
 		<!-- questa url è definita dentro il modulo socket.io ed il javascript con dentro le funzioni di comunicazione client (http://localhost:3000/socket.io/socket.io.js)-->
 		<script src="/socket.io/socket.io.js"></script>
-		<script>
-			
-			var socket = io();					//inizializza la richiesta verso il server, apre e MANTIENE APERTA la comunicazione
-
-			socket.on('connect', () => {
-				console.log('Connesso al server');
-			});
-
-			socket.on('disconnect', () => {
-				console.log('Disconnesso dal server');
-			});
-
-
-
-		</script>
+		<script src="/js/index.js">></script>
 	</body>
 </html>
