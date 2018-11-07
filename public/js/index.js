@@ -1,7 +1,7 @@
 var socket = io();								//inizializza la richiesta verso il server, apre e MANTIENE APERTA la comunicazione
 
 socket.on('connect', function() {
-	console.log('Connesso al server');
+	//console.log('Connesso al server');
 
 	//socket.emit('createMessage', {				//definizione di un custom event CLIENT->SERVER ('nome evento', 'oggetto con le informazioni inviate')
 	//	from: 'jhonny@mnemonic.it',
