@@ -30,12 +30,13 @@ io.on('connection', (socket) => {														//registro l'evento (connection) 
 
 
 
-	socket.on('createMessage', (message) => {											//custom CLIENT->SERVER event definito in index.js ('dati inviati al server')
+	socket.on('createMessage', (message,callback) => {									//custom CLIENT->SERVER event definito in index.js ('dati inviati al server','funzione inviata dal client per farsi restituire,il client, il messaggio dell'avvenuta ricezione del messaggio')
 		console.log('Messaggio ricevuto dal client', message);
-		io.emit('newMessage', generateMessage(message.from,message.text))			//definisco un emitter su TUTTE le connessioni attive
+		io.emit('newMessage', generateMessage(message.from,message.text))				//definisco un emitter su TUTTE le connessioni attive
 
+		callback('Questo è inviato dal server');										//chiamata alla callback devinita nell'emitter createMessage (index.js)
 
-		//socket.broadcast.emit('newMessage', {						//definisco un emitter su TUTTE le connessioni attive tranne quella che ha mandato il messaggio
+		//socket.broadcast.emit('newMessage', {											//definisco un emitter su TUTTE le connessioni attive tranne quella che ha mandato il messaggio
 		//	from: message.from,
 		//	text: message.text,
 		//	createAt: new Date().toLocaleString()
@@ -57,4 +58,4 @@ server.listen(port, () => {
 //NOTE IMPORTANTI
 // soket.emit() 													emette l'evento sulla singola connessione diretta 1->1
 // io.emit()														emette la connessione su tutte le connessini attive al servizio 1->ALL
-// socket.broadcast.emit()											emette la connessione su tutte le connessini attive al servizio tranne che l'ha inviato !1->ALL
+// socket.broadcast.emit()											emette la connessione su tutte le connessini attive al servizio tranne a chi l'ha inviato !1->ALL
