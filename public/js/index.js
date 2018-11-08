@@ -15,14 +15,14 @@ socket.on('disconnect', function() {
 });
 
 
-socket.on('newMessage', function(message) {				//custom SERVER->CLIENT event definito in server.js function('dati inviati dal server')
+socket.on('newMessage', function(message) {						//custom SERVER->CLIENT event definito in server.js function('dati inviati dal server')
 	console.log('Nuovo Messaggio dal server', message);
 	var li = $('<li/>');
 	li.text(`${message.from}: ${message.text}`);
 	$('#messages').append(li);
 });
 
-//socket.emit('createMessage', {							//custom CLIENT->SERVER
+//socket.emit('createMessage', {								//custom CLIENT->SERVER
 //	from: 'Frank',
 //	text: 'Ciao'
 //}, function(data) {											//questa callback viene inviata ed eseguita dal server che mi darà in RISPOSTA il messaggio
@@ -38,4 +38,29 @@ $('#message-form').on('submit', function(e) {
 	}, function(){
 
 	})
-})
+});
+
+socket.on('newLocationMessage', function(message) {
+	var li = $('<li/>');
+	var a = $('<a target="_blank">Io sono qua</a>')
+	li.text(`${message.from}, `);
+	a.attr('href',message.url);
+	li.append(a);
+	$('#messages').append(li);
+});
+
+
+var locationButton = $('#send-location');
+locationButton.on('click', function(e) {
+	if( !navigator.geolocation ) {
+		return alert('Geolocalizzanione non supportata dal browser')
+	}
+	navigator.geolocation.getCurrentPosition(function (position) {
+		socket.emit('createLocationMessage', {
+			latitude: position.coords.latitude,
+			longitude: position.coords.longitude,
+		})
+	}, function() {
+		alert('Non capisco dove sei')
+	})
+});
