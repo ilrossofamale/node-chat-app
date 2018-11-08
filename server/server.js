@@ -3,48 +3,38 @@ const http = require('http');
 const exp = require('express');
 const socketIO = require('socket.io');
 
-
+const {generateMessage} = require('./utils/message');
 const publicPath = path.join(__dirname,'../public');
 const port = process.env.PORT || 3000;
 
 
-var app = exp();													//applicazione express
-var server = http.createServer(app);								//creo un server utilizzando il modulo http nativo di node
-var io = socketIO(server);											//in questo modo configuro il server per funzionare con il web socket
+var app = exp();																		//applicazione express
+var server = http.createServer(app);													//creo un server utilizzando il modulo http nativo di node
+var io = socketIO(server);																//in questo modo configuro il server per funzionare con il web socket
 
 
 app.use(exp.static(publicPath));
 
-io.on('connection', (socket) => {									//registro l'evento (connection) e gli passo l'oggetto socket definito dentro il client
+io.on('connection', (socket) => {														//registro l'evento (connection) e gli passo l'oggetto socket definito dentro il client
 	console.log('Nuovo utente collegato');
 
 
-	//socket.emit('newMessage', {									//definizione di un custom event SERVER->CLIENT ('nome evento', 'oggetto con le informazioni inviate')
+	//socket.emit('newMessage', {														//definizione di un custom event SERVER->CLIENT ('nome evento', 'oggetto con le informazioni inviate')
 	//	from: 'mike@example.com',
 	//	text: 'Hey, come va?',
 	//	createAt: 123456
 	//});
 
-	socket.emit('newMessage', {
-		text: 'Benvenuto nella chat',
-		from: 'Admin',
-		createAt: new Date().toLocaleString()
-	});
-	socket.broadcast.emit('newMessage', {
-		text:'Un nuovo utente si è collegato',
-		from:'Admin',
-		createAt: new Date().toLocaleString()
-	})
+	socket.emit('newMessage', generateMessage('Admin','Benvenuto nella chat'));
+	socket.broadcast.emit('newMessage', generateMessage('Admin','Un nuovo utente si è collegato'))
 
 
 
-	socket.on('createMessage', (message) => {						//custom CLIENT->SERVER event definito in index.js ('dati inviati al server')
+	socket.on('createMessage', (message) => {											//custom CLIENT->SERVER event definito in index.js ('dati inviati al server')
 		console.log('Messaggio ricevuto dal client', message);
-		//io.emit('newMessage', {										//definisco un emitter su TUTTE le connessioni attive
-		//	from: message.from,
-		//	text: message.text,
-		//	createAt: new Date().toLocaleString()
-		//})
+		io.emit('newMessage', generateMessage(message.from,message.text))			//definisco un emitter su TUTTE le connessioni attive
+
+
 		//socket.broadcast.emit('newMessage', {						//definisco un emitter su TUTTE le connessioni attive tranne quella che ha mandato il messaggio
 		//	from: message.from,
 		//	text: message.text,
