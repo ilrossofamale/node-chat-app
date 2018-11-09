@@ -34,7 +34,7 @@ io.on('connection', (socket) => {														//registro l'evento (connection) 
 		console.log('Messaggio ricevuto dal client', message);
 		io.emit('newMessage', generateMessage(message.from,message.text))				//definisco un emitter su TUTTE le connessioni attive
 
-		callback('Questo è inviato dal server');										//chiamata alla callback devinita nell'emitter createMessage (index.js)
+		callback();																		//chiamata alla callback devinita nell'emitter createMessage (index.js)
 
 		//socket.broadcast.emit('newMessage', {											//definisco un emitter su TUTTE le connessioni attive tranne quella che ha mandato il messaggio
 		//	from: message.from,

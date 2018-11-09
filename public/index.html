@@ -5,21 +5,23 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<title>NODE CHAT APP</title>
-		<link rel="stylesheet" href=" ">
+		<link rel="stylesheet" href="/css/styles.css">
 	</head>
-	<body>
-		<p>Ciao dalla chat!</p>
-		
-
-		<form id="message-form">
-			<input name="message" type="text" placeholder="Scrivi il messaggio"/>
-			<button>Invia</button>
-		</form>
-		
-		<button id="send-location">Invia Posizione</button>
-
-		<ol id="messages"></ol>
-
+	<body class="chat">
+		<div class="chat__sidebar">
+			<h3>Utenti</h3>
+			<div id="users"></div>
+		</div>
+		<div class="chat__main">
+			<ol id="messages" class="chat__messages"></ol>
+			<div class="chat__footer">
+				<form id="message-form">
+					<input name="message" type="text" placeholder="Scrivi il messaggio" autocomplete="off" autofocus/>
+					<button>Invia</button>
+				</form>
+				<button id="send-location">Invia Posizione</button>
+			</div>
+		</div>
 		<!-- questa url è definita dentro il modulo socket.io ed il javascript con dentro le funzioni di comunicazione client (http://localhost:3000/socket.io/socket.io.js)-->
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="/js/libs/jquery-3.3.1.min.js"></script>

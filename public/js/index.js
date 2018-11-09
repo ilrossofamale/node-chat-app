@@ -32,11 +32,12 @@ socket.on('newMessage', function(message) {						//custom SERVER->CLIENT event d
 
 $('#message-form').on('submit', function(e) {
 	e.preventDefault();
+	var messageTextbox = $('[name=message]');
 	socket.emit('createMessage', {
 		from:'User',
-		text: $('[name=message]').val()
+		text: messageTextbox.val()
 	}, function(){
-
+		messageTextbox.val('');
 	})
 });
 
@@ -55,12 +56,17 @@ locationButton.on('click', function(e) {
 	if( !navigator.geolocation ) {
 		return alert('Geolocalizzanione non supportata dal browser')
 	}
+
+	locationButton.attr('disabled', 'disabled').text('Invia Posizione...');
+
 	navigator.geolocation.getCurrentPosition(function (position) {
+		locationButton.removeAttr('disabled').text('Invia Posizione');
 		socket.emit('createLocationMessage', {
 			latitude: position.coords.latitude,
 			longitude: position.coords.longitude,
 		})
 	}, function() {
+		locationButton.removeAttr('disabled').text('Invia Posizione');
 		alert('Non capisco dove sei')
 	})
 });
