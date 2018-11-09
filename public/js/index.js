@@ -16,10 +16,15 @@ socket.on('disconnect', function() {
 
 
 socket.on('newMessage', function(message) {						//custom SERVER->CLIENT event definito in server.js function('dati inviati dal server')
+	
 	var formattedTime = moment(message.createAt).format('h:mm a');
-	var li = $('<li/>');
-	li.text(`${message.from} ${formattedTime}: ${message.text}`);
-	$('#messages').append(li);
+	var template = $('#message-template').html();
+	var html = Mustache.render(template, {
+		text: message.text,
+		from: message.from,
+		createdAt: formattedTime
+	});
+	$('#messages').append(html);
 });
 
 //socket.emit('createMessage', {								//custom CLIENT->SERVER
@@ -42,13 +47,20 @@ $('#message-form').on('submit', function(e) {
 });
 
 socket.on('newLocationMessage', function(message) {
-	var li = $('<li/>');
-	var a = $('<a target="_blank">Io sono qua</a>');
 	var formattedTime = moment(message.createAt).format('h:mm a');
+	var template = $('#location-message-template').html();
+	var html = Mustache.render(template, {
+		from: message.from,
+		url: message.url,
+		createdAt: formattedTime
+	})
+
+	/*var li = $('<li/>');
+	var a = $('<a target="_blank">Io sono qua</a>');
 	li.text(`${message.from} ${formattedTime}, `);
 	a.attr('href',message.url);
-	li.append(a);
-	$('#messages').append(li);
+	li.append(a);*/
+	$('#messages').append(html);
 });
 
 
