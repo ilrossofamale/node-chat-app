@@ -16,9 +16,9 @@ socket.on('disconnect', function() {
 
 
 socket.on('newMessage', function(message) {						//custom SERVER->CLIENT event definito in server.js function('dati inviati dal server')
-	console.log('Nuovo Messaggio dal server', message);
+	var formattedTime = moment(message.createAt).format('h:mm a');
 	var li = $('<li/>');
-	li.text(`${message.from}: ${message.text}`);
+	li.text(`${message.from} ${formattedTime}: ${message.text}`);
 	$('#messages').append(li);
 });
 
@@ -43,8 +43,9 @@ $('#message-form').on('submit', function(e) {
 
 socket.on('newLocationMessage', function(message) {
 	var li = $('<li/>');
-	var a = $('<a target="_blank">Io sono qua</a>')
-	li.text(`${message.from}, `);
+	var a = $('<a target="_blank">Io sono qua</a>');
+	var formattedTime = moment(message.createAt).format('h:mm a');
+	li.text(`${message.from} ${formattedTime}, `);
 	a.attr('href',message.url);
 	li.append(a);
 	$('#messages').append(li);
