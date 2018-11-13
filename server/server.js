@@ -4,13 +4,16 @@ const exp = require('express');
 const socketIO = require('socket.io');
 
 const {generateMessage,generateLocationMessage} = require('./utils/message');
+const {isRealString} = require('./utils/validation');
+const {Users} = require('./utils/users');
 const publicPath = path.join(__dirname,'../public');
 const port = process.env.PORT || 3000;
 
 
 var app = exp();																		//applicazione express
 var server = http.createServer(app);													//creo un server utilizzando il modulo http nativo di node
-var io = socketIO(server);																//in questo modo configuro il server per funzionare con il web socket
+var io = socketIO(server);
+var users = new Users();															//in questo modo configuro il server per funzionare con il web socket
 
 
 app.use(exp.static(publicPath));
@@ -24,9 +27,26 @@ io.on('connection', (socket) => {														//registro l'evento (connection) 
 	//	text: 'Hey, come va?',
 	//	createAt: 123456
 	//});
+	socket.on('join', (params,callback) => {
 
-	socket.emit('newMessage', generateMessage('Admin','Benvenuto nella chat'));
-	socket.broadcast.emit('newMessage', generateMessage('Admin','Un nuovo utente si è collegato'))
+		//verifico i parametri passati (param)
+		if(!isRealString(params.name) || !isRealString(params.room)) {
+			return callback('Nome e Nome stanza sono obbligatori');
+		}
+
+		socket.join(params.room);
+
+
+		//per aggiornare la lista degli utenti collegati in una certa stanza
+		users.removeUser(socket.id);
+		users.addUser(socket.id,params.name,params.room);
+		io.to(params.room).emit('updateUserList', users.getUserList(params.room));
+
+
+		socket.emit('newMessage', generateMessage('Admin','Benvenuto nella chat'));
+		socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin',`${params.name} si è collegato alla stanza`));
+		callback();
+	});
 
 
 
@@ -48,6 +68,14 @@ io.on('connection', (socket) => {														//registro l'evento (connection) 
 
 	socket.on('disconnect', (soket) => {
 		console.log('Utente scollegato');
+
+		var user = users.removeUser(socket.id);
+
+		if (user) {
+			io.to(user.room).emit('updateUserList',users.getUserList(user.room));
+			io.to(user.room).emit('newMessage', generateMessage('Admin',`${user.name} ha lasciato la stanza`))
+		}
+
 	})
 });
 
@@ -62,3 +90,5 @@ server.listen(port, () => {
 // soket.emit() 													emette l'evento sulla singola connessione diretta 1->1
 // io.emit()														emette la connessione su tutte le connessini attive al servizio 1->ALL
 // socket.broadcast.emit()											emette la connessione su tutte le connessini attive al servizio tranne a chi l'ha inviato !1->ALL
+// io.to('Nome della stanza')										emette l'evento a tutte le persone connesse ad una stanza specifica
+// socket.broadcast.to('Nome della stanza')							emette la connessione su tutte le connessini attive alla stanze tranne a chi l'ha inviato !1->ALL

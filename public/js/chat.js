@@ -2,7 +2,6 @@ var socket = io();								//inizializza la richiesta verso il server, apre e MAN
 
 
 function scrollToBottom() {
-
 	//selectors
 	var messages = $('#messages');
 	var newMessage = messages.children('li:last-child');
@@ -12,18 +11,26 @@ function scrollToBottom() {
 	var scrollHeight = messages.prop('scrollHeight');
 	var newMessageHeight = newMessage.innerHeight();
 	var lastMessageHeight = newMessage.prev().innerHeight();
-
 	if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
-		
 		messages.scrollTop(scrollHeight);
-
 	}
-
 }
 
 
 socket.on('connect', function() {
 	console.log('Connesso al server');
+
+	var params = $.deparam(window.location.search);
+
+	socket.emit('join', params, function(err) {
+		if(err) {
+			alert(err);
+			window.location.href = '/';
+		} else {
+			console.log('tutto OK!');
+		}
+	});
+
 
 	//socket.emit('createMessage', {				//definizione di un custom event CLIENT->SERVER ('nome evento', 'oggetto con le informazioni inviate')
 	//	from: 'jhonny@mnemonic.it',
@@ -35,6 +42,16 @@ socket.on('connect', function() {
 socket.on('disconnect', function() {
 	console.log('Disconnesso dal server');
 });
+
+
+socket.on('updateUserList', function(users) {
+	console.log('Users List', users);
+	var ol = $('<ol/>');
+	users.forEach(function(users){
+		ol.append($('<li/>').text(users));
+	});
+	$('#users').html(ol);
+})
 
 
 socket.on('newMessage', function(message) {						//custom SERVER->CLIENT event definito in server.js function('dati inviati dal server')
