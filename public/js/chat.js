@@ -15,13 +15,9 @@ function scrollToBottom() {
 		messages.scrollTop(scrollHeight);
 	}
 }
-
-
 socket.on('connect', function() {
 	console.log('Connesso al server');
-
 	var params = $.deparam(window.location.search);
-
 	socket.emit('join', params, function(err) {
 		if(err) {
 			alert(err);
@@ -30,20 +26,15 @@ socket.on('connect', function() {
 			console.log('tutto OK!');
 		}
 	});
-
-
 	//socket.emit('createMessage', {				//definizione di un custom event CLIENT->SERVER ('nome evento', 'oggetto con le informazioni inviate')
 	//	from: 'jhonny@mnemonic.it',
 	//	text:'Ciao di nuovo'
 	//})
 
 });
-
 socket.on('disconnect', function() {
 	console.log('Disconnesso dal server');
 });
-
-
 socket.on('updateUserList', function(users) {
 	console.log('Users List', users);
 	var ol = $('<ol/>');
@@ -52,8 +43,6 @@ socket.on('updateUserList', function(users) {
 	});
 	$('#users').html(ol);
 })
-
-
 socket.on('newMessage', function(message) {						//custom SERVER->CLIENT event definito in server.js function('dati inviati dal server')
 	var formattedTime = moment(message.createAt).format('h:mm a');
 	var template = $('#message-template').html();
@@ -72,8 +61,6 @@ socket.on('newMessage', function(message) {						//custom SERVER->CLIENT event d
 //}, function(data) {											//questa callback viene inviata ed eseguita dal server che mi darà in RISPOSTA il messaggio
 //	console.log('Ricevuto!', data);
 //});
-
-
 $('#message-form').on('submit', function(e) {
 	e.preventDefault();
 	var messageTextbox = $('[name=message]');
@@ -83,7 +70,6 @@ $('#message-form').on('submit', function(e) {
 		messageTextbox.val('');
 	})
 });
-
 socket.on('newLocationMessage', function(message) {
 	var formattedTime = moment(message.createAt).format('h:mm a');
 	var template = $('#location-message-template').html();
@@ -95,16 +81,12 @@ socket.on('newLocationMessage', function(message) {
 	$('#messages').append(html);
 	scrollToBottom();
 });
-
-
 var locationButton = $('#send-location');
 locationButton.on('click', function(e) {
 	if( !navigator.geolocation ) {
 		return alert('Geolocalizzanione non supportata dal browser')
 	}
-
 	locationButton.attr('disabled', 'disabled').text('Invia Posizione...');
-
 	navigator.geolocation.getCurrentPosition(function (position) {
 		locationButton.removeAttr('disabled').text('Invia Posizione');
 		socket.emit('createLocationMessage', {
