@@ -51,8 +51,14 @@ io.on('connection', (socket) => {														//registro l'evento (connection) 
 
 
 	socket.on('createMessage', (message,callback) => {									//custom CLIENT->SERVER event definito in index.js ('dati inviati al server','funzione inviata dal client per farsi restituire,il client, il messaggio dell'avvenuta ricezione del messaggio')
-		console.log('Messaggio ricevuto dal client', message);
-		io.emit('newMessage', generateMessage(message.from,message.text))				//definisco un emitter su TUTTE le connessioni attive
+		//console.log('Messaggio ricevuto dal client', message);
+		
+		var user = users.getUser(socket.id);
+
+		if(user && isRealString(message.text)) {
+			io.to(user.room).emit('newMessage', generateMessage(user.name,message.text))				//definisco un emitter su TUTTE le connessioni attive
+		}
+
 
 		callback();																		//chiamata alla callback devinita nell'emitter createMessage (index.js)
 
@@ -63,7 +69,14 @@ io.on('connection', (socket) => {														//registro l'evento (connection) 
 		//})
 	});
 	socket.on('createLocationMessage', (coords) => {
-		io.emit('newLocationMessage',generateLocationMessage('Admin',coords.latitude,coords.longitude));
+
+		var user = users.getUser(socket.id);
+
+		if(user) {
+			io.to(user.room).emit('newLocationMessage',generateLocationMessage(user.name,coords.latitude,coords.longitude));
+		}
+
+
 	});
 
 	socket.on('disconnect', (soket) => {
